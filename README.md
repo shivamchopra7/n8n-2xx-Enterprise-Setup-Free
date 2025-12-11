@@ -1,4 +1,4 @@
-# n8n Enterprise AI Setup (Beta)
+# n8n 2.0 Enterprise AI Setup (Latest)
 
 <div align="center">
 
