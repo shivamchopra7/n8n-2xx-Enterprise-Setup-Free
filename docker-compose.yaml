@@ -42,8 +42,8 @@ x-n8n-service: &n8n_service
   logging:
     driver: "json-file"
     options:
-      max-size: "20m"
-      max-file: "8"
+      max-size: "512m"
+      max-file: "50"
 
 # ============================================================================
 # SERVICES
@@ -73,8 +73,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "20m"
-        max-file: "8"
+        max-size: "512m"
+        max-file: "50"
 
   # --------------------------------------------------------------------------
   # Cache/Queue: Redis
