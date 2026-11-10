@@ -163,19 +163,9 @@ echo
 PORTS_OK=0
 TOTAL_PORTS=0
 
-# Check main ports
+# Check main ports (exposed on host by docker-compose.yaml)
 TOTAL_PORTS=$((TOTAL_PORTS + 1))
 if check_port "n8n Web Interface" "5678"; then
-    PORTS_OK=$((PORTS_OK + 1))
-fi
-
-TOTAL_PORTS=$((TOTAL_PORTS + 1))
-if check_port "PostgreSQL" "5432"; then
-    PORTS_OK=$((PORTS_OK + 1))
-fi
-
-TOTAL_PORTS=$((TOTAL_PORTS + 1))
-if check_port "Redis" "6379"; then
     PORTS_OK=$((PORTS_OK + 1))
 fi
 
@@ -243,11 +233,11 @@ else
     print_error "n8n environment has issues that need attention"
     echo
     echo "Troubleshooting steps:"
-    echo "1. Check service logs: docker-compose logs [service-name]"
-    echo "2. Restart services: docker-compose restart"
+    echo "1. Check service logs: docker compose logs [service-name]"
+    echo "2. Restart services: docker compose restart"
     echo "3. Check .env configuration"
     echo "4. Ensure ports are not in use by other applications"
 fi
 
 echo
-print_status "For detailed troubleshooting, see SETUP.md"
+print_status "For detailed troubleshooting, see README.md"

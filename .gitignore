@@ -1,1 +1,21 @@
+# Environment & secrets
 .env
+.env.*
+!.env.example
+.env.backup*
+
+# Backups & runtime data
+backups/
+*.sql
+*.dump
+
+# macOS / OS metadata
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Editor / agent state
+.vscode/
+.idea/
+.claude/
+.remember/

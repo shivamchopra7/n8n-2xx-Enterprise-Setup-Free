@@ -39,20 +39,20 @@ command_exists() {
 # Function to generate encryption key
 generate_encryption_key() {
     if command_exists openssl; then
-        openssl rand -base64 32 | tr -d '\n'
+        openssl rand -base64 32 | tr -dc 'A-Za-z0-9' | head -c 32
     else
         # Fallback method using /dev/urandom
-        head -c 32 /dev/urandom | base64 | tr -d '\n'
+        LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32
     fi
 }
 
-# Function to generate random password
+# Function to generate random password (URL/sed-safe alphanumeric)
 generate_password() {
     local length=${1:-16}
     if command_exists openssl; then
-        openssl rand -base64 $length | tr -d '\n' | head -c $length
+        openssl rand -base64 48 | tr -dc 'A-Za-z0-9' | head -c "$length"
     else
-        head -c $length /dev/urandom | base64 | tr -d '\n' | head -c $length
+        LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c "$length"
     fi
 }
 
@@ -66,7 +66,7 @@ if ! command_exists docker; then
     exit 1
 fi
 
-if ! command_exists docker-compose; then
+if ! docker compose version >/dev/null 2>&1 && ! command_exists docker-compose; then
     print_error "Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
@@ -148,10 +148,18 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         1)
             print_status "Configuring Gmail SMTP..."
             read -p "Enter your Gmail address: " gmail_user
-            read -p "Enter your Gmail App Password: " gmail_pass
+            read -s -p "Enter your Gmail App Password: " gmail_pass
+            echo
             
-            sed -i.bak "s/your-email@gmail.com/$gmail_user/" .env
-            sed -i.bak "s/your-gmail-app-password/$gmail_pass/" .env
+            sed -i.bak \
+                -e "s|^# N8N_EMAIL_MODE=smtp|N8N_EMAIL_MODE=smtp|" \
+                -e "s|^# N8N_SMTP_HOST=smtp.gmail.com|N8N_SMTP_HOST=smtp.gmail.com|" \
+                -e "s|^# N8N_SMTP_PORT=587|N8N_SMTP_PORT=587|" \
+                -e "s|^# N8N_SMTP_USER=user@gmail.com|N8N_SMTP_USER=$gmail_user|" \
+                -e "s|^# N8N_SMTP_PASS=app-password|N8N_SMTP_PASS=$gmail_pass|" \
+                -e "s|^# N8N_SMTP_SENDER=user@gmail.com|N8N_SMTP_SENDER=$gmail_user|" \
+                -e "s|^# N8N_SMTP_SSL=false|N8N_SMTP_SSL=false|" \
+                -e "s|^# N8N_SMTP_STARTTLS=true|N8N_SMTP_STARTTLS=true|" .env
             rm .env.bak
             
             print_success "Gmail SMTP configured"
@@ -176,8 +184,8 @@ print_success "Setup completed successfully!"
 echo
 print_status "Next steps:"
 echo "1. Review and customize .env file if needed"
-echo "2. Run: docker-compose up -d"
+echo "2. Run: docker compose up -d"
 echo "3. Access n8n at: http://localhost:5678"
 echo "4. Check setup with: ./scripts/health-check.sh"
 echo
-print_status "For detailed instructions, see SETUP.md"
+print_status "For detailed instructions, see README.md"
