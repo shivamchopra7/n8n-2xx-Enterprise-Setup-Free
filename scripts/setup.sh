@@ -105,10 +105,10 @@ REDIS_PASSWORD=$(generate_password 16)
 BASIC_AUTH_PASSWORD=$(generate_password 12)
 
 # Update .env file with generated values
-sed -i.bak "s/REPLACE-WITH-32-CHAR-ENCRYPTION-KEY/$ENCRYPTION_KEY/" .env
-sed -i.bak "s/change-this-password/$POSTGRES_PASSWORD/" .env
-sed -i.bak "s/change-this-redis-password/$REDIS_PASSWORD/" .env
-sed -i.bak "s/your-secure-password/$BASIC_AUTH_PASSWORD/" .env
+sed -i.bak "s/^N8N_ENCRYPTION_KEY=.*/N8N_ENCRYPTION_KEY=$ENCRYPTION_KEY/" .env
+sed -i.bak "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$POSTGRES_PASSWORD/" .env
+sed -i.bak "s/^REDIS_PASSWORD=.*/REDIS_PASSWORD=$REDIS_PASSWORD/" .env
+sed -i.bak "s/^N8N_BASIC_AUTH_PASSWORD=.*/N8N_BASIC_AUTH_PASSWORD=$BASIC_AUTH_PASSWORD/" .env
 
 # Remove backup file
 rm .env.bak
